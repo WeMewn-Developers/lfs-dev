@@ -1,50 +1,29 @@
 use std::borrow::Cow;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
-use rocket::request::FromParam;
+use rand::Rng;
 
-use rand::{Rng};
-
-pub struct ImageId<'a>(Cow<'a, str>);
-
-#[derive(Debug)]
-pub enum ImageError {
-    InvalidId,
-    ImageNotFound,
-}
+pub struct ImageId<'a>(pub Cow<'a, str>);
 
 impl ImageId<'_> {
-    /// Create a new Image ID
-    pub fn new(size: usize) -> ImageId<'static> {
+    /// Generate a new unique Image Id
+    pub fn new(size: usize, filetype: &str) -> ImageId<'static> {
         const BASE62: &[u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-        let mut id = String::with_capacity(size);
+        let id: String;
         let mut rng = rand::thread_rng();
-        for _ in 0..size {
-            id.push(BASE62[rng.gen::<usize>() % 62] as char);
+        loop {
+            let mut potential_id = String::with_capacity(size);
+            for _ in 0..size {
+                potential_id.push(BASE62[rng.gen::<usize>() % 62] as char);
+            }
+
+            if !Path::new(&format!("{}/{}/{}.{}", env!("CARGO_MANIFEST_DIR"), filetype, potential_id, filetype)).exists() {
+                id = potential_id;
+                break;
+            }
         }
 
         ImageId(Cow::Owned(id))
     }
-
-    /// Return the path to the Image
-    pub fn file_path(&self) -> PathBuf {
-        let root = concat!(env!("CARGO_MANIFEST_DIR"), "/", "images");
-        Path::new(root).join(self.0.as_ref())
-    }
 }
-
-impl<'a> FromParam<'a> for ImageId<'a> {
-    type Error = ImageError;
-
-    fn from_param(param: &'a str) -> Result<Self, Self::Error> {
-        if !param.chars().all(|c| c.is_ascii_alphanumeric()) {
-            Err(ImageError::InvalidId)
-        } else if !ImageId(param.into()).file_path().exists() {
-            Err(ImageError::ImageNotFound)
-        } else {
-            Ok(ImageId(param.into()))
-        }
-    }
-}
-
