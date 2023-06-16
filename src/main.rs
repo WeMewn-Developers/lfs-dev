@@ -9,6 +9,9 @@ use image::{upload_png, delete_png, upload_jpeg, delete_jpeg};
 mod video;
 use video::{upload_mp4, delete_mp4, upload_gif, delete_gif};
 
+mod audio;
+use audio::{upload_wav, delete_wav, upload_mp3, delete_mp3};
+
 use rocket::fs::{FileServer, relative, TempFile};
 use rocket::form::Form;
 use rocket::http::ContentType;
@@ -31,4 +34,5 @@ fn rocket() -> _ {
         .mount("/get", FileServer::from(relative!("upload")))
         .mount("/img", routes![upload_png, delete_png, upload_jpeg, delete_jpeg])
         .mount("/video", routes![upload_mp4, delete_mp4, upload_gif, delete_gif])
+        .mount("/audio", routes![upload_wav, delete_wav, upload_mp3, delete_mp3])
 }
