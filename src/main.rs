@@ -1,4 +1,7 @@
 #[macro_use] extern crate rocket;
+extern crate rand;
+
+mod image;
 
 #[get("/")]
 fn index() -> &'static str {
