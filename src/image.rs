@@ -2,8 +2,9 @@ use rocket::http::{ContentType, Status};
 use rocket::fs::TempFile;
 use rocket::form::Form;
 
-mod image_id;
-use image_id::ImageId;
+use std::fs::remove_file;
+
+use crate::id::Id;
 
 #[derive(FromForm)]
 pub struct PNGUpload<'r> {
@@ -13,10 +14,19 @@ pub struct PNGUpload<'r> {
 
 #[post("/png", data = "<image>")]
 pub async fn upload_png(mut image: Form<PNGUpload<'_>>) -> (Status, String) {
-    let id = ImageId::new(8, "png");
+    let id = Id::new(8, "png");
     let file_path = format!("{}{}{}{}", env!("CARGO_MANIFEST_DIR"), "/upload/png/", id.0.as_ref(), ".png");
     match image.file.persist_to(file_path).await {
-        Ok(_) => (Status::Ok, String::from(format!("{}/{}{}", "png", id.0.as_ref().to_string(), ".png"))),
+        Ok(_) => (Status::Ok, format!("{}/{}{}", "png", id.0.as_ref().to_string(), ".png")),
+        Err(err) => (Status::BadRequest, err.to_string()),
+    }
+}
+
+#[delete("/png/<id>")]
+pub fn delete_png(id: Id<'_>) -> (Status, String) {
+    let file_path = format!("{}{}{}{}", env!("CARGO_MANIFEST_DIR"), "/upload/png", id.0.as_ref(), ".png");
+    match remove_file(file_path) {
+        Ok(_) => (Status::Ok, id.0.as_ref().to_string()),
         Err(err) => (Status::BadRequest, err.to_string()),
     }
 }
@@ -29,10 +39,19 @@ pub struct JPEGUpload<'r> {
 
 #[post("/jpeg", data = "<image>")]
 pub async fn upload_jpeg(mut image: Form<JPEGUpload<'_>>) -> (Status, String) {
-    let id = ImageId::new(8, "jpeg");
+    let id = Id::new(8, "jpeg");
     let file_path = format!("{}{}{}{}", env!("CARGO_MANIFEST_DIR"), "/upload/jpeg/", id.0.as_ref(), ".png");
     match image.file.persist_to(file_path).await {
-        Ok(_) => (Status::Ok, String::from(format!("{}/{}{}", "jpeg", id.0.as_ref().to_string(), ".jpeg"))),
+        Ok(_) => (Status::Ok, format!("{}/{}{}", "jpeg", id.0.as_ref().to_string(), ".jpeg")),
+        Err(err) => (Status::BadRequest, err.to_string()),
+    }
+}
+
+#[delete("/jpeg/<id>")]
+pub fn delete_jpeg(id: Id<'_>) -> (Status, String) {
+    let file_path = format!("{}{}{}{}", env!("CARGO_MANIFEST_DIR"), "/upload/jpeg/", id.0.as_ref(), ".jpeg");
+    match remove_file(file_path) {
+        Ok(_) => (Status::Ok, id.0.as_ref().to_string()),
         Err(err) => (Status::BadRequest, err.to_string()),
     }
 }

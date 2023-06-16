@@ -1,13 +1,15 @@
 use std::borrow::Cow;
 use std::path::Path;
 
+use rocket::request::FromParam;
+
 use rand::Rng;
 
-pub struct ImageId<'a>(pub Cow<'a, str>);
+pub struct Id<'a>(pub Cow<'a, str>);
 
-impl ImageId<'_> {
+impl Id<'_> {
     /// Generate a new unique Image Id
-    pub fn new(size: usize, filetype: &str) -> ImageId<'static> {
+    pub fn new(size: usize, filetype: &str) -> Id<'static> {
         const BASE62: &[u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
         let id: String;
@@ -24,6 +26,18 @@ impl ImageId<'_> {
             }
         }
 
-        ImageId(Cow::Owned(id))
+        Id(Cow::Owned(id))
+    }
+}
+
+impl<'a> FromParam<'a> for Id<'a> {
+    type Error = &'a str;
+
+    fn from_param(param: &'a str) -> Result<Self, Self::Error> {
+        if !param.chars().all(|c| c.is_ascii_alphanumeric()) {
+            Err(param)
+        } else {
+            Ok(Id(param.into()))
+        }
     }
 }
