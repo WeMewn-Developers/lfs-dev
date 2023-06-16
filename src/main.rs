@@ -7,7 +7,7 @@ mod image;
 use image::{upload_png, delete_png, upload_jpeg, delete_jpeg};
 
 mod video;
-use video::{upload_mp4, upload_gif};
+use video::{upload_mp4, delete_mp4, upload_gif, delete_gif};
 
 use rocket::fs::{FileServer, relative, TempFile};
 use rocket::form::Form;
@@ -30,5 +30,5 @@ fn rocket() -> _ {
         .mount("/", routes![upload_form])
         .mount("/get", FileServer::from(relative!("upload")))
         .mount("/img", routes![upload_png, delete_png, upload_jpeg, delete_jpeg])
-        .mount("/video", routes![upload_mp4, upload_gif])
+        .mount("/video", routes![upload_mp4, delete_mp4, upload_gif, delete_gif])
 }
