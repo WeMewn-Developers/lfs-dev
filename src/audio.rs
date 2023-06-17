@@ -55,3 +55,53 @@ pub fn delete_mp3(id: Id<'_>) -> (Status, String) {
         Err(err) => (Status::BadRequest, err.to_string()),
     }
 }
+
+#[derive(FromForm)]
+pub struct OggUpload<'r> {
+    #[field(validate = ext(ContentType::OGG))]
+    file: TempFile<'r>,
+}
+
+#[post("/ogg", data = "<data>")]
+pub async fn upload_ogg(mut data: Form<OggUpload<'_>>) -> (Status, String) {
+    let id = Id::new(8, "ogg");
+    let file_path = format!("{}{}{}{}", env!("CARGO_MANIFEST_DIR"), "/upload/ogg/", id.0.as_ref(), ".ogg");
+    match data.file.persist_to(file_path).await {
+        Ok(_) => (Status::Ok, format!("{}/{}{}", "ogg", id.0.as_ref(), ".ogg")),
+        Err(err) => (Status::BadRequest, err.to_string()),
+    }
+}
+
+#[delete("/ogg/<id>")]
+pub fn delete_ogg(id: Id<'_>) -> (Status, String) {
+    let file_path = format!("{}{}{}{}", env!("CARGO_MANIFEST_DIR"), "/upload/ogg/", id.0.as_ref(), ".ogg");
+    match remove_file(file_path) {
+        Ok(_) => (Status::Ok, id.0.as_ref().to_string()),
+        Err(err) => (Status::BadRequest, err.to_string()),
+    }
+}
+
+#[derive(FromForm)]
+pub struct AacUpload<'r> {
+    #[field(validate = ext(ContentType::AAC))]
+    file: TempFile<'r>,
+}
+
+#[post("/aac", data = "<data>")]
+pub async fn upload_aac(mut data: Form<AacUpload<'_>>) -> (Status, String) {
+    let id = Id::new(8, "aac");
+    let file_path = format!("{}{}{}{}", env!("CARGO_MANIFEST_DIR"), "/upload/aac/", id.0.as_ref(), ".aac");
+    match data.file.persist_to(file_path).await {
+        Ok(_) => (Status::Ok, format!("{}/{}{}", "aac", id.0.as_ref(), ".aac")),
+        Err(err) => (Status::BadRequest, err.to_string()),
+    }
+}
+
+#[delete("/aac/<id>")]
+pub fn delete_aac(id: Id<'_>) -> (Status, String) {
+    let file_path = format!("{}{}{}{}", env!("CARGO_MANIFEST_DIR"), "/upload/aac/", id.0.as_ref(), ".aac");
+    match remove_file(file_path) {
+        Ok(_) => (Status::Ok, id.0.as_ref().to_string()),
+        Err(err) => (Status::BadRequest, err.to_string()),
+    }
+}
