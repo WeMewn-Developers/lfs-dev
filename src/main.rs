@@ -30,5 +30,10 @@ fn rocket() -> _ {
         .mount("/", routes![upload_form])
         .mount("/get", FileServer::from(relative!("upload")))
         .mount("/img", routes![upload_png, delete_png, upload_jpeg, delete_jpeg])
-        .mount("/audio", routes![upload_wav, delete_wav, upload_mp3, delete_mp3, upload_ogg, delete_ogg, upload_aac, delete_aac])
+        .mount("/audio", routes![
+            upload_wav, delete_wav,
+            upload_mp3, delete_mp3,
+            upload_ogg, delete_ogg,
+            upload_aac, delete_aac,
+            ])
 }

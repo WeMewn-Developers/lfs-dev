@@ -33,7 +33,7 @@ pub fn delete_wav(id: Id<'_>) -> (Status, String) {
 
 #[derive(FromForm)]
 pub struct Mp3Upload<'r> {
-    #[field(validate = ext(ContentType::MP3))]
+    #[field(validate = ext(ContentType::Binary))]
     file: TempFile<'r>,
 }
 
@@ -58,7 +58,7 @@ pub fn delete_mp3(id: Id<'_>) -> (Status, String) {
 
 #[derive(FromForm)]
 pub struct OggUpload<'r> {
-    #[field(validate = ext(ContentType::OGG))]
+    #[field(validate = ext(ContentType::Binary))]
     file: TempFile<'r>,
 }
 
@@ -83,7 +83,7 @@ pub fn delete_ogg(id: Id<'_>) -> (Status, String) {
 
 #[derive(FromForm)]
 pub struct AacUpload<'r> {
-    #[field(validate = ext(ContentType::AAC))]
+    #[field(validate = ext(ContentType::Binary))]
     file: TempFile<'r>,
 }
 
