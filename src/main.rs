@@ -1,5 +1,4 @@
 #[macro_use] extern crate rocket;
-extern crate rand;
 
 mod id;
 
@@ -12,6 +11,8 @@ use audio::{upload_wav, delete_wav, upload_mp3, delete_mp3, upload_ogg, delete_o
 use rocket::fs::{FileServer, relative, TempFile};
 use rocket::form::Form;
 use rocket::http::ContentType;
+
+mod auth;
 
 #[derive(FromForm)]
 struct Upload<'r> {

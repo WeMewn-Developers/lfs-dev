@@ -12,3 +12,6 @@ string = "10 MiB"
 bytes = "10 MiB"
 json = "10 MiB"
 msgpack = "10 MiB"
+
+[default.databases]
+mysql_db = { url = "mysql://root:root@db:3306/test" }

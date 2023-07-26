@@ -1,0 +1,28 @@
+version: "3"
+services:
+
+  db:
+    image: mariadb:11.0
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: test
+    volumes:
+      - mariadb_data:/var/lib/mysql/
+
+  lfs:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    command: ["/rocket-init.sh"]
+    ports:
+      - 8000:8000
+    volumes:
+      - ./rocket-init.sh:/rocket-init.sh
+      - ./upload:/upload
+    depends_on:
+      - db
+
+volumes:
+  mariadb_data:
